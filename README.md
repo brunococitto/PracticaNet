@@ -7,7 +7,7 @@ En este repositorio se encuentran todos los laboratorios utilizados en la asigna
 |:computer: [Pre-Requisitos](#Pre-Requisitos)|
 |:cactus: [Git Working Tree](#El-Working-Tree-de-Git)|
 |:bookmark_tabs: [Glosario](#Glosario)|
-|:briefcase: [Instrucciones Git](#Instrucciones)|
+|:briefcase: [Instrucciones Git](#Instrucciones-Git)|
 |:star2: [Extra](#Extra)|
 
 ## Pre-Requisitos
@@ -127,7 +127,7 @@ El repositorio que se encuentra almacenado en GitHub (u otra plataforma) para to
 
 ## Instrucciones Git
 La forma de trabajo que se va a utilizar este año consiste en los siguientes pasos:
-> Esta se encuentra inspirada por la forma de trabajo que fue implementada por otros adscriptos en otra materia electiva de la UTN llamdada "Soporte a la Gestión de Datos con Programación Visual"
+> Esta se encuentra inspirada por la forma de trabajo que fue implementada por otros adscriptos en otra materia electiva de la UTN llamada "Soporte a la Gestión de Datos con Programación Visual"
 
 ##### IMPORTANTE: Donde diga `practica-2021` remplazar por `Labs`
 
