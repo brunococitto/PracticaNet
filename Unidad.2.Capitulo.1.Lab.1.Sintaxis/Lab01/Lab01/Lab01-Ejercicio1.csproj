@@ -1,0 +1,10 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>Lab01-Ejercicio1</AssemblyName>
+    <RootNamespace>Lab01-Ejercicio1</RootNamespace>
+  </PropertyGroup>
+
+</Project>
