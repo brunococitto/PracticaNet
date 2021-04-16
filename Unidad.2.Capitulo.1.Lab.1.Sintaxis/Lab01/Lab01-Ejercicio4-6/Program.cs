@@ -30,7 +30,10 @@ namespace Lab01_Ejercicio4_6
                     Console.Write(decena[numero / 10 - 1]);
                     numero = numero - Convert.ToInt32(numero / 10) * 10;
                 }
-                Console.WriteLine(unidad[numero - 1]);
+                if (numero > 0)
+                {
+                    Console.WriteLine(unidad[numero - 1]);
+                }   
             }
         }
     }
