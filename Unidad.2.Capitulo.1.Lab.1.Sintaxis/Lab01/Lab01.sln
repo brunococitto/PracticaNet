@@ -23,9 +23,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lab01-Ejercicio4-6", "Lab01
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lab01-Ejercicio4-7", "Lab01-Ejercicio4-7\Lab01-Ejercicio4-7.csproj", "{CB4724D6-72CB-4E3D-A1FE-7C7EE30FD388}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab01-Ejercicio4-8", "Lab01-Ejercicio4-8\Lab01-Ejercicio4-8.csproj", "{86CD5755-547F-481C-BBF6-54DEC07B178A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lab01-Ejercicio4-8", "Lab01-Ejercicio4-8\Lab01-Ejercicio4-8.csproj", "{86CD5755-547F-481C-BBF6-54DEC07B178A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lab01-Ejercicio-9", "Lab01-Ejercicio-9\Lab01-Ejercicio-9.csproj", "{D647BF2D-D728-4FDB-8519-BC48B0F00758}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Lab01-Ejercicio4-9", "Lab01-Ejercicio-9\Lab01-Ejercicio4-9.csproj", "{D647BF2D-D728-4FDB-8519-BC48B0F00758}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
