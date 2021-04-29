@@ -15,7 +15,7 @@ namespace Clases
         }
 
         ~Juego() {
-            Console.WriteLine("Muchas gracias por jugar!");
+            Console.WriteLine("Saliendo del juego...");
         }
 
         public int Record { get; set; }
@@ -62,34 +62,65 @@ namespace Clases
 
         private int PreguntarNumero()
         {
-            int nroInput;
-            do
+            int nroInput = 0;
+            try
             {
-                Console.Write($"Ingrese un número entre 0 y {NumeroMaximo}: ");
-                nroInput = Convert.ToInt32(Console.ReadLine());
-                if (nroInput < 0 | nroInput > NumeroMaximo)
-                    Console.WriteLine("El número ingresado está fuera del rango aceptado!");
-            } while (nroInput < 0 | nroInput > NumeroMaximo);
+                do
+                {
+                    Console.Write($"Ingrese un número entre 0 y {NumeroMaximo}: ");
+                    nroInput = Convert.ToInt32(Console.ReadLine());
+                    if (nroInput < 0 | nroInput > NumeroMaximo)
+                        Console.WriteLine("El número ingresado está fuera del rango aceptado!");
+                } while (nroInput < 0 | nroInput > NumeroMaximo);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                PreguntarNumero();
+            }
             return nroInput;
         }
         private void PreguntarMaximo()
         {
-            do
+            try
             {
-                Console.Write($"Ingrese el número máximo deseado: ");
-                NumeroMaximo = Convert.ToInt32(Console.ReadLine());
-                if (NumeroMaximo <= 0)
-                    Console.WriteLine("El número ingresado es menor o igual a 0!");
-            } while (NumeroMaximo <= 0);
+                do
+                {
+                    Console.Write($"Ingrese el número máximo deseado: ");
+                    NumeroMaximo = Convert.ToInt32(Console.ReadLine());
+                    if (NumeroMaximo <= 0)
+                        Console.WriteLine("El número ingresado es menor o igual a 0!");
+                } while (NumeroMaximo <= 0);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                PreguntarMaximo();
+            }
         }
         private void Continuar()
         {
-            Console.Write("Desea jugar otra vez? si / no: ");
-            if (Console.ReadLine().ToLower() == "si")
+            try
             {
-                Console.Clear();
-                ComenzarJuego();
+                Console.Write("Desea jugar otra vez? si / no: ");
+                string _input = Console.ReadLine().ToLower();
+                if (_input == "si")
+                {
+                    Console.Clear();
+                    ComenzarJuego();
+                } else if (_input == "no")
+                {
+                    Console.WriteLine("Muchas gracias por jugar!");
+                } else
+                {
+                    throw new Exception("No ingresó una opción correcta!");
+                }
             }
-        }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+                Continuar();
+            }
+}
     }
 }
