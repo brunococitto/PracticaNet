@@ -17,7 +17,10 @@ namespace DataAccess
         // enviando esta el optionsBuilder como parametro. 
         public ApplicationContext CreateDbContext(string[] args)
         {
-            throw new NotImplementedException();
+            var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
+            optionsBuilder.UseSqlite();
+
+            return new ApplicationContext(optionsBuilder.Options);
         }
     }
 }
