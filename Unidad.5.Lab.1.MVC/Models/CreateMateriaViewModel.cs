@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace Unidad._5.Lab._1.MVC.Models
 {
-    public class EditMateriaViewModel
+    public class CreateMateriaViewModel
     {
-        public Materia Materia { get; }
+        public Materia? Materia { get; }
         public List<SelectListItem> Planes { get; }
-        public EditMateriaViewModel(Materia materia, IEnumerable<Plan> planes)
+        public CreateMateriaViewModel(Materia? materia, IEnumerable<Plan> planes)
         {
             Materia = materia;
             Planes = planes
-                .Select(p => new SelectListItem 
-                    { Text = $"{p.Especialidad}:{p.Anio}", Value = p.Id.ToString(), Selected = p.Id == materia?.Plan?.Id  }
+                .Select(p => new SelectListItem
+                { Text = $"{p.Especialidad}:{p.Anio}", Value = p.Id.ToString() }
                 ).ToList();
         }
     }

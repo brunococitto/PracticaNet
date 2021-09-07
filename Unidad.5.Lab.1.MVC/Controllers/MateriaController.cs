@@ -19,17 +19,19 @@ namespace Unidad._5.Lab._1.MVC.Controllers
             _logger.LogDebug("Inicializado controlador MateriaController");
         }
 
+        public IActionResult Index() => RedirectToAction("List");
+
         public IActionResult List()
         {
-            return View(_materiaRepository.GetMaterias());
+            return View(_materiaRepository.GetAll());
         }
 
         public IActionResult Edit(int? id)
         {
             if (id == null) return NotFound();
-            Materia? materia = _materiaRepository.GetOneMateria((int)id);
+            Materia? materia = _materiaRepository.GetOne((int)id);
             if (materia == null) return NotFound();
-            return View(new EditMateriaViewModel(materia, _planRepository.GetPlanes()));
+            return View(new EditMateriaViewModel(materia, _planRepository.GetAll()));
         }
 
 
@@ -41,11 +43,31 @@ namespace Unidad._5.Lab._1.MVC.Controllers
             if (id != materia.Id) return NotFound();
             if (ModelState.IsValid)
             {
-                materia.Plan = _planRepository.GetOnePlan(materia.PlanId);
-                _materiaRepository.UpdateMateria(materia);
+                _materiaRepository.Update(materia);
+
+                return RedirectToAction("List");
             }
 
-            return RedirectToAction("List");
+            return View(new EditMateriaViewModel(materia, _planRepository.GetAll()));
+        }
+
+        public IActionResult Create()
+        {
+            return View(new CreateMateriaViewModel(null, _planRepository.GetAll()));
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Create([Bind("Id, Descripcion, HsSemanales, HsTotales, PlanId")] Materia materia)
+        {
+            if (ModelState.IsValid)
+            {
+                _materiaRepository.Add(materia);
+
+                return RedirectToAction("List");
+            }
+
+            return View(new CreateMateriaViewModel(materia, _planRepository.GetAll()));
         }
     }
 }
