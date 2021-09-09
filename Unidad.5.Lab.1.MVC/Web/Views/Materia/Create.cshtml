@@ -1,11 +1,34 @@
 ﻿@model CreateMateriaViewModel
 
-
-
-
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="Materia.Descripcion" class="form-label">Descripción</label>
+                <input asp-for="Materia.Descripcion" class="form-control" />
+                <span asp-validation-for="Materia.Descripcion" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Materia.HsSemanales" class="form-label">Horas semanales</label>
+                <input asp-for="Materia.HsSemanales" type="number" class="form-control" />
+                <span asp-validation-for="Materia.HsSemanales" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Materia.HsTotales" class="form-label">Horas totales</label>
+                <input asp-for="Materia.HsTotales" type="number" class="form-control"/>
+                <span asp-validation-for="Materia.HsTotales" class="text-danger"></span>
+            </div>
+            <select class="form-group" asp-for="Materia.PlanId" asp-items="Model.Planes"></select>
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Crear materia</button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Volver a la lista de materias</a>
 </div>
 
 @section Scripts {
