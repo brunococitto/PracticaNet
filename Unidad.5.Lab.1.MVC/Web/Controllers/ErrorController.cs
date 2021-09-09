@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Unidad._5.Lab._1.MVC.Controllers
+namespace Web.Controllers
 {
     public class ErrorController : Controller
     {
@@ -16,13 +16,11 @@ namespace Unidad._5.Lab._1.MVC.Controllers
             _logger = logger;
         }
 
-        [Route("/error/404")]
         public IActionResult NotFoundError()
         {
             return View();
         }
 
-        [Route("/error/{code:int}")]
         public IActionResult GenericError(int code)
         {
             _logger.LogInformation($"Error codigo {code}");

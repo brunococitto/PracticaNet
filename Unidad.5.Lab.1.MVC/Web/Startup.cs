@@ -8,9 +8,9 @@ using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Unidad._5.Lab._1.MVC.Models;
+using Web.Models;
 
-namespace Unidad._5.Lab._1.MVC
+namespace Web
 {
     public class Startup
     {
@@ -25,8 +25,6 @@ namespace Unidad._5.Lab._1.MVC
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddSingleton<IMateriaRepository, MateriaRepository>();
-            services.AddSingleton<IPlanRepository, PlanRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,7 +41,7 @@ namespace Unidad._5.Lab._1.MVC
                 app.UseHsts();
             }
 
-            app.UseStatusCodePagesWithReExecute("/error/{0}");
+            // Aca
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
