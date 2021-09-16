@@ -15,11 +15,13 @@ namespace Web.Controllers
         {
             _logger = logger;
         }
-        [Route("/Error/404")]
-        public IActionResult NotFoundError()
-        {
-            return View();
-        }
+
+        [Route("/error/401")]
+        public IActionResult NotAuthorized() => View();
+
+        [Route("/error/403")]
+        public IActionResult NotFoundError() => View();
+
         [Route("/error/{code:int}")]
         public IActionResult GenericError(int code)
         {
