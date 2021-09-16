@@ -10,7 +10,6 @@ namespace Web.Controllers
         private readonly ILogger<MateriaController> _logger;
         private readonly IMateriaRepository _materiaRepository;
         private readonly IPlanRepository _planRepository;
-
         public MateriaController(ILogger<MateriaController> logger, IMateriaRepository materiaRepository, IPlanRepository planRepository)
         {
             _logger = logger;
