@@ -12,6 +12,8 @@ namespace Web.Models
         void Update(Materia materia);
 
         void Add(Materia materia);
+
+        Materia? Delete(int id);
     }
 
     public class MateriaRepository : IMateriaRepository
@@ -64,6 +66,17 @@ namespace Web.Models
             materia.Id = _materias.Count + 2;
             materia.Plan = _planRepository.GetOne(materia.PlanId);
             _materias.Add(materia);
+        }
+
+        public Materia? Delete(int id)
+        {
+            var materiaToDelete = _materias.Find(m => m.Id == id);
+
+            if (materiaToDelete == null) return null;
+
+            _materias.Remove(materiaToDelete);
+
+            return materiaToDelete;
         }
     }
 }

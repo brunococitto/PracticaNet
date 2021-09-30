@@ -21,25 +21,33 @@ namespace Web.Models
 
         public UsuarioRepository(IHasher hasher)
         {
-            string salt = hasher.GenerateSalt();
-            _usuarios = new List<Usuario>()
-            {
-                new()
-                {
-                    Nombre = "Hector Aguirre",
-                    Mail = "admin@example.com",
-                    Clave = hasher.GenerateHash("Admin_1", salt),
-                    Salt = salt, 
-                    Role = "Admin"
-                }
-            };
+            _usuarios = new List<Usuario>();
             _hasher = hasher;
+
+            string saltHector = hasher.GenerateSalt();
+            _usuarios.Add(new()
+            {
+                Nombre = "Hector Aguirre",
+                Mail = "admin@example.com",
+                Clave = hasher.GenerateHash("Admin_1", saltHector),
+                Salt = saltHector,
+                Role = UsuarioRol.Admin
+            });
+            string saltMario = hasher.GenerateSalt();
+            _usuarios.Add(new()
+            {
+                Nombre = "Mario Eche",
+                Mail = "superadmin@example.com",
+                Clave = hasher.GenerateHash("Superadmin_1", saltMario),
+                Salt = saltMario,
+                Role = UsuarioRol.Superadmin
+            });
         }
         public UsuarioLogeado? Validar(LoginViewModel loginVM)
         {
             var user = _usuarios.Find(u => u.Clave == loginVM.Clave && u.Mail == loginVM.Mail);
 
-            return user == null? null : new UsuarioLogeado(id: user.Id, nombre: user.Nombre, mail: user.Mail);
+            return user == null? null : new UsuarioLogeado(id: user.Id, nombre: user.Nombre, mail: user.Mail, user.Role);
         }
 
         public UsuarioLogeado? Register(RegisterViewModel registerVM)
@@ -49,7 +57,7 @@ namespace Web.Models
             Usuario user = new();
             _usuarios.Add(user);
 
-            return new UsuarioLogeado(id: user.Id, nombre: user.Nombre, mail: user.Mail);
+            return new UsuarioLogeado(id: user.Id, nombre: user.Nombre, mail: user.Mail, role: user.Role);
         }
     }
 }

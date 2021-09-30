@@ -56,5 +56,11 @@ namespace Web.Controllers
             }
             return View(new CreateMateriaViewModel(materia, _planRepository.GetAll()));
         }
+
+        [HttpGet]
+        public IActionResult Delete(int? id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

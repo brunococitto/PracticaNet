@@ -31,7 +31,7 @@ public MateriaController(ILogger<MateriaController> logger, IMateriaRepository m
 return View(_materiaRepository.GetAll())
 ```
 
-5. Agregar el contenido de la vista correspondiente ubicada en la carpeta ***Views/Materia***, mostrando un listado ```<ul>``` de cards de bootstrap (clase ***.card***, esto ya viene configurado con el proyecto default de inicio). Asegurarse que los atributos Descripcion, Plan, HsSemanales y HsTotales sean mostrados (estos ultimos dos utilizando la clase ***.card-subtitle*** de bootstrap, ademas se aconseja usar a Descripcion como un ***.card-title*** y para el resto ***.card-text***). En cuanto al uso de directivas razor para iterar en la coleccion usar 
+5. Agregar el contenido de la vista correspondiente ubicada en la carpeta ***Views/Materia***, mostrando un listado ```<ul>``` de cards de bootstrap (clase ***.card***, cabe aclarar que la libreria bootstrap ya viene configurada con el proyecto default de inicio) las cuales deben irse wrapeando hasta que ocupen el minimo espacio que requieren (usar ***d-flex flex-wrap*** en el container html y ***flex-grow-1*** en los elementos). Asegurarse que los atributos Descripcion, Plan, HsSemanales y HsTotales sean mostrados (estos ultimos dos utilizando la clase ***.card-subtitle*** de bootstrap, ademas se aconseja usar a Descripcion como un ***.card-title*** y para el resto ***.card-text***). En cuanto al uso de directivas razor para iterar en la coleccion usar 
 ```c#
 // Solo al inicio del archivo
 @model IEnumerable<Materia>
@@ -40,7 +40,7 @@ return View(_materiaRepository.GetAll())
 ```
 > Estas directivas ```@mat.{atributo}``` van a popular con los datos enviados desde el controlador el html enviado ante cada request (esto sucede en el servidor, osea su maquina en el puerto 5000). Estas estan fuertemente tipadas (lo cual hace que se provean sugerencias al escribir) gracias a la directiva ```@Model IEnumerable<Materia>``` que se encuentra al inicio del archivo, lo cual determina que tipo de dato se aceptara para ser enviado por el controlador en la accion correspondiente
 
-![image](https://user-images.githubusercontent.com/41701343/132447918-4167529f-bbed-49da-82ad-6e6e33590616.png)
+![image](https://user-images.githubusercontent.com/41701343/134066590-ab6edc66-4dae-4ef8-b4cf-ec6a933cfa31.png)
 
 <details close>
 <summary>Ver Vista Completa</summary>
@@ -48,20 +48,20 @@ return View(_materiaRepository.GetAll())
 ```html
 @model IEnumerable<Materia>
 
-<ul class="list-group">
+<ul class="d-flex flex-wrap">
     @foreach (Materia mat in Model)
     {
-        <div class="card">
+        <li class="card flex-grow-1 m-1">
             <div class="card-body">
                 <h5 class="card-title">@mat.Descripcion</h5>
                 <h6 class="card-subtitle mb-2 text-muted">
                     @Html.DisplayNameFor(model => mat.HsSemanales): @mat.HsSemanales -
                     @Html.DisplayNameFor(model => mat.HsTotales): @mat.HsTotales
                 </h6>
-                <p class="card-text">@mat.Plan.Especialidad <span class="text-info">@mat.Plan.Anio</span></p>
-                <a class="btn btn-primary" asp-area="" asp-action="Edit" asp-route-id="@mat.Id">Editar</a>
+                <p class="card-text">@mat.Plan?.Especialidad <span class="text-info">@mat.Plan?.Anio</span></p>
+                <a class="btn btn-primary text-white" asp-area="" asp-action="Edit" asp-route-id="@mat.Id">Editar</a>
             </div>
-        </div>
+        </li>
     }
 </ul>
 ```
@@ -133,7 +133,7 @@ return View(new EditMateriaViewModel(materia, _planRepository.GetAll()));
 
 8. Para utilizar validaciones se utilizara la libreria [FluentValidation](https://docs.fluentvalidation.net/en/latest/aspnet.html), ya que permite realizar validaciones mucho mas complejas y ademas estas resultan mas legibles que cuando se utilizan data annotations. Como primer paso se debe instalar el paquete Nuget ***FluentValidation.AspNetCore*** con el comando ```dotnet add package FluentValidation.AspNetCore``` o utilizando el administrador de paquetes Nuget de Visual Studio. 
 
-9. Luego, en la clase ```Startup``` en el metodo ```ConfigureServices``` (aquel utilizado para inyeccion de dependencias) encadenar el metodo ```.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<MateriaValidator>())``` a ```services.AddControllersWithViews()```. De esta manera se logra la completa integracion de asp net core con esta liberia de validacion, utilizandose exactamente la misma forma de trabajo que con data annotations (el metodo por default del framework).
+9. Luego, en la clase ```Startup``` en el metodo ```ConfigureServices``` (aquel utilizado para inyeccion de dependencias) encadenar el metodo ```.AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<MateriaValidator>())``` a ```services.AddControllersWithViews()```. De esta manera se logra la completa integracion de asp net core con esta liberia de validacion, utilizandose exactamente la misma forma de trabajo que con data annotations (el metodo por default del framework). Como ***paso opcional*** es posible forzar que los mensajes de validacion utilicen las traducciones al español que proporciona la libreria, gracias a agregar la siguiente expresion en la funcion (func) que ```.AddFluentValidation(func)``` toma como argumento: ```fv.ValidatorOptions.LanguageManager.Culture = new CultureInfo("es");```
 
 <details close>
 <summary>Ver Código</summary>
@@ -141,7 +141,12 @@ return View(new EditMateriaViewModel(materia, _planRepository.GetAll()));
 ```c#
 public void ConfigureServices(IServiceCollection services)
 {
-    services.AddControllersWithViews().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<MateriaValidator>());
+    services.AddControllersWithViews().AddFluentValidation(fv => {
+        fv.RegisterValidatorsFromAssemblyContaining<MateriaValidator>();
+        // Opcional, los mensajes de: "{Prop} is required" y "Please enter a valid number." se seguiran mostrando en ingles a menos que se
+        // localice/internacionalice la aplicación completa (tema intermedio-avanzado que no se tratara en este laboratorio).
+        fv.ValidatorOptions.LanguageManager.Culture = new CultureInfo("es");
+    });
 }
 ```
 
@@ -317,21 +322,21 @@ return RedirectToAction("List");
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Materia.Descripcion" class="control-label"></label>
-                <input asp-for="Materia.Descripcion" class="form-control" />
-                <span asp-validation-for="Materia.Descripcion" class="text-danger"></span>
+                <label asp-for="Materia!.Descripcion" class="control-label"></label>
+                <input asp-for="Materia!.Descripcion" class="form-control" />
+                <span asp-validation-for="Materia!.Descripcion" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Materia.HsSemanales" class="control-label"></label>
-                <input asp-for="Materia.HsSemanales" class="form-control" />
-                <span asp-validation-for="Materia.HsSemanales" class="text-danger"></span>
+                <label asp-for="Materia!.HsSemanales" class="control-label"></label>
+                <input asp-for="Materia!.HsSemanales" class="form-control" />
+                <span asp-validation-for="Materia!.HsSemanales" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Materia.HsTotales" class="control-label"></label>
-                <input asp-for="Materia.HsTotales" class="form-control" />
-                <span asp-validation-for="Materia.HsTotales" class="text-danger"></span>
+                <label asp-for="Materia!.HsTotales" class="control-label"></label>
+                <input asp-for="Materia!.HsTotales" class="form-control" />
+                <span asp-validation-for="Materia!.HsTotales" class="text-danger"></span>
             </div>
-            <select class="form-group" asp-for="Materia.PlanId" asp-items="Model.Planes"></select>
+            <select class="form-group" asp-for="Materia!.PlanId" asp-items="Model.Planes"></select>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -402,12 +407,108 @@ app.UseStatusCodePagesWithReExecute("/Error/{0}");
 
 </details>
 
-18. Tener en cuenta que hay mas tipos de errores, por lo que en la accion ```GenericError(int code)``` agregar la anotacion correspondiente, teniendo en cuenta que en este tipo de anotaciones es posible parametrizar el string de parametro con lo siguiente ```[Route("/error/{code:int}")]```, siendo ***"{code:int}"*** justamente reflejado en el parametro del metodo.
+18. Tener en cuenta que hay mas tipos de errores, por lo que en la accion ```GenericError(int code)``` agregar la anotacion correspondiente, teniendo en cuenta que en este tipo de anotaciones es posible parametrizar el string de parametro con lo siguiente ```[Route("/error/{code:int}")]```, siendo ***"{code:int}"*** justamente reflejado en el parametro del metodo. Ademas dentro del metodo loggear que codigo de error ocurre con ```_logger.LogError($"Error codigo {code}")```.
 ```c#
 public IActionResult GenericError(int code)
 ```
+![image](https://user-images.githubusercontent.com/41701343/134944385-aa5ef8fc-1cb8-4561-a79b-87436fe80b08.png)
+    
+19. La unica accion que resta agregar al controlador ```Materia``` es la de ```Delete```, para esto en el GET de esta mostramos la materia a ser borrado a modo de solicitud de confirmacion de forma similar a lo que realizado para el GET de la accion ```Edit``` (claramente teniendo en cuenta el realizar las mismas comprobaciones previas antes de enviar los datos de la materia a la vista). En cuanto a la vista asociada, mostrar una description list (```<dl></dl>```) de los datos de la materia a borrar y debajo de eso un pequeño formulario con un boton para confirmar junto con un link para volver a la lista.
 
-19. En el proyecto ***Test*** clase ```IntegrationTestWeb``` ir a ***Prueba***/***Ejecutar todas las pruebas*** de la barra de herramientas de VS. Esto es para verificar que la implementación cumpla con las especificaciones requeridas. Por ejemplo para la accion ***/Materia/List***:
+> Es fundamental que el GET de una accion delete nunca realice el borrado de la entidad, ya que este tipo de acciones son consideradas seguras (ya que no realizan cambios en el estado de la aplicación), sino que lo apropiado es que esto sea mediante un POST (ver siguiente paso)
+
+<details close>
+<summary>Ver Codigo</summary>
+
+```c#
+if (id == null) return NotFound();
+
+var materia = _materiaRepository.GetOne((int)id);
+
+if (materia == null) return NotFound();
+
+return View(materia);
+```
+
+</details>
+
+
+<details close>
+<summary>Ver Vista Completa</summary>
+
+```html
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Descripcion)
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Descripcion
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.HsSemanales)
+        </dt>
+        <dd class="col-sm-10">
+            @Model.HsSemanales
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.HsTotales)
+        </dt>
+        <dd class="col-sm-10">
+            @Model.HsTotales
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Plan)
+        </dt>
+        <dd class="col-sm-10">
+            @Model.Plan?.Especialidad <span class="text-info">@Model.Plan?.Anio</span>
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>
+```
+
+</details>
+
+20. Para el POST de la accion ```Delete``` notar que al tener la misma signatura ```public IActionResult Delete(int id)``` que para el metodo con la anotacion GET hay un error de compilacion, por lo que es necesario cambiar la signatura ```public IActionResult DeleteConfirmed(int id)``` e indicar que en realidad este metodo debe ser considerado como la misma accion, gracias a la anotacion ```[HttpPost, ActionName("Delete")]```. En la implementacion llamar a ```_materiaRepository.Delete(id)``` y luego redirigir a la lista. Finalmente ir a la vista de la accion ```List``` y agregar un boton de navegacion mas para esta accion.
+
+<details close>
+<summary>Ver Codigo</summary>
+
+```c#
+[HttpPost, ActionName("Delete")]
+[ValidateAntiForgeryToken]
+public IActionResult DeleteConfirmed(int id)
+{
+    var materia = _materiaRepository.Delete(id);
+
+    if (materia == null) return NotFound();
+
+    return RedirectToAction("List");
+}
+```
+
+</details>
+
+<details close>
+<summary>Ver Vista de List</summary>
+
+```html
+<div class="card-body">
+    ...
+    <a class="btn btn-primary text-white" asp-area="" asp-action="Edit" asp-route-id="@mat.Id">Editar</a>
+    <a class="btn btn-danger text-white" asp-area="" asp-action="Delete" asp-route-id="@mat.Id">Delete</a>
+</div>
+```
+
+</details>
+
+21. En el proyecto ***Test*** clase ```IntegrationTestWeb``` ir a ***Prueba***/***Ejecutar todas las pruebas*** de la barra de herramientas de VS. Esto es para verificar que la implementación cumpla con las especificaciones requeridas. Por ejemplo para la accion ***/Materia/List***:
 ``` c#
 [Fact]
 public async Task VisitRootPage_ShouldRenderTwoMateriaCardsAndTheFirstOneMustHaveCertainCardSubtitle()
@@ -415,6 +516,8 @@ public async Task VisitRootPage_ShouldRenderTwoMateriaCardsAndTheFirstOneMustHav
 > Cada uno de estos test revisara el html enviado por cada accion de los controladores y chequeara que esten ciertos elementos previamente solicitados, como pueden ser las secciones de validacion o las opciones del select
 
 ## Extencion:  Implementar Autenticación y Autorizacion
+> Tener en cuenta que hay dos usuarios pre-registrados en la aplicación, lo cual es declarado en el constructor de la clase ```UsuarioRepository```: (mail: admin@example.com, pass: Admin_1, rol: Admin) y (mail: superadmin@example.com, pass: Superadmin_1, rol: Superadmin)
+
 1. En la clase ```Startup``` ir al metodo ```ConfigureServices(IServiceCollection services)``` y agregar el repositorio de usuarios que servira para registrar usuarios o revisar si estan registrados. Ademas, agregar la clase ```Hasher``` que permitira hashear las contraseñas y obtener un salt, de modo que estas no se guarden en texto plano y la clase ```UsuarioManager``` que agregara la cookie (que servira para identificar al usuario) al navegador del cliente o la eliminara (por lo tanto el usuario ya no podra acceder a los puntos que requieran autenticacion).
 ```c#
 services.AddScoped<IHasher, Hasher>();
@@ -431,7 +534,7 @@ services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).Ad
     options.AccessDeniedPath = "/Error/401";
 });
 ```
-> ```options.LoginPath``` permitira que cuando el framework redireccione a al usuario despues de intentar acceder a una ruta que requiere autorizacion este lo haga a la url que se tiene implementada. Esto es especialmente necesario para ```options.AccessDeniedPath``` ya que el fw por default envia a los usuarios que estan autenticados pero que no cuentan con el rol o permiso requerido para acceder a una ruta determinada a ***/Account/AccessDenied*** (ruta que no esta implementada en esta aplicacion), sin embargo si esta implementada la ruta ***/Error/401*** para estos casos.
+> ```options.LoginPath``` permitira que cuando el framework redireccione a al usuario despues de intentar acceder a una ruta que requiere autorizacion este lo haga a la url que se tiene implementada. Esto es especialmente necesario para ```options.AccessDeniedPath``` ya que el fw por default envia a los usuarios que estan autenticados pero que no cuentan con el rol o permiso requerido para acceder a una ruta determinada a ***/Account/AccessDenied*** (ruta que no esta implementada en esta aplicación), sin embargo si esta implementada la ruta ***/Error/401*** para estos casos.
 
 3. En el metodo ```void Configure(IApplicationBuilder app, IWebHostEnvironment env)``` agregar el middleware ```app.UseAuthentication()``` exactamente despues que el otro middleware ```app.UseRouting()``` y antes que ```app.UseAuthorization()```. Esto es debido a que la request pasa por los middlewares exactamente en el orden que estan declarados en este metodo.
 
@@ -478,7 +581,7 @@ var claims = new List<Claim>()
     new(ClaimTypes.NameIdentifier, usuarioLogeado.Id.ToString()),
     new(ClaimTypes.Name, usuarioLogeado.Nombre),
     new(ClaimTypes.Email, usuarioLogeado.Mail),
-    new(ClaimTypes.Role, "Admin")
+    new(ClaimTypes.Role, usuarioLogeado.Role.ToString())
 };
 ```
 
@@ -508,7 +611,7 @@ await httpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme
 
 </details>
 
-10. En la clase ```UsuarioRepository``` metodo ```async Task<IActionResult> Login(LoginViewModel loginVM)``` (notar que este tambien es asincronico ya que requiere esperar al metodo ```async Task SignIn(...)``` de ```UsuarioManager```, recordar que al hacer esto el hilo de ejecucion se libera volviendo al pool de threads). Alli, llamar al metodo ```_usuarioRepository.Validar(LoginViewModel)``` y chequear si el usuario que devuelve es null, en el caso de que suceda agregar al ModelState un error con ```ModelState.AddModelError(key, value)``` donde la key deberia ser ***""***, ya que es error que no esta asociado a ninguna campo del formulario en particular sino que es mas bien general (por lo que se mostrara arriba en la seccion ```<div asp-validation-summary="ModelOnly" class="text-danger"></div>``` de la vista)
+10. En el controlador ```Account``` metodo ```async Task<IActionResult> Login(LoginViewModel loginVM)``` (notar que este tambien es asincronico ya que requiere esperar al metodo ```async Task SignIn(...)``` de ```UsuarioManager```, recordar que al hacer esto el hilo de ejecucion se libera volviendo al pool de threads). Alli, llamar al metodo ```_usuarioRepository.Validar(LoginViewModel)``` y chequear si el usuario que devuelve es null, en el caso de que suceda agregar al ModelState un error con ```ModelState.AddModelError(key, value)``` donde la key deberia ser ***""***, ya que es error que no esta asociado a ninguna campo del formulario en particular sino que es mas bien general (por lo que se mostrara arriba en la seccion ```<div asp-validation-summary="ModelOnly" class="text-danger"></div>``` de la vista)
 
 <details close>
 <summary>Ver Codigo</summary>
@@ -540,10 +643,12 @@ return RedirectToAction(controllerName: "Materia", actionName: "Index");
 
 12. Ir a la clase ```RegisterValidator``` en el archivo ***/Model/RegisterViewModel***, alli agregar validaciones para lo siguiente:
 - El nombre de un usuario debe tener este 3 y 30 caracteres
-- El mail debe tener el formato apropiado. Ademas, este campo se debe mostrar como "Horas Semanales" 
+- El mail debe tener el formato apropiado.
 - La clave debe ser de mas de 6 caracteres, con uno en mayuscula y al menos un numero (usar el metodo ```.Must(p => p``` de ***FluentValidator*** junto con el ```.Any(Char.IsDeterminadoTipo)``` de ***LINQ*** para strings)
 - El campo confirmarClave debe coincidir con lo ingresado para el campo clave (usar el metodo ```.Equal(m => m.Atributo)``` de ***FluentValidation***). Debe mostrarse como "Confirmar Clave"
 
+![imagen](https://user-images.githubusercontent.com/41701343/133905735-cab915ed-48f7-42ff-8020-3ead6928fe4b.png)
+    
 <details close>
 <summary>Ver Codigo</summary>
 
@@ -576,7 +681,7 @@ public class RegisterValidator: AbstractValidator<RegisterViewModel>
 
 </details>
 
-13. En el caso de accion ```async Task<IActionResult> Register(RegisterViewModel registerVM)``` proceder de la misma manera, teniendo en cuenta que en este caso si loggedUser es devuelto como nulo por ```_usuarioRepository.Register(registerViewModel)``` es debido a que ya hay un usuario registrado con esos datos.
+13. En el caso de accion ```async Task<IActionResult> Register(RegisterViewModel registerVM)``` del controlador ```Account``` proceder de la misma manera, teniendo en cuenta que en este caso si loggedUser es devuelto como nulo por ```_usuarioRepository.Register(registerViewModel)``` es debido a que ya hay un usuario registrado con esos datos.
 
 <details close>
 <summary>Ver Codigo</summary>
@@ -615,23 +720,39 @@ return RedirectToActionPermanent(controllerName: "Home", actionName: "Index");
  accion ```Edit``` agregar ```[Authorize(Roles = "Admin")]```, esto permitira no dar acceso a aquellos que no esten logeados y ademas rechazar a los que no cuenten con el rol admin alojado como claim en la cookie (en este caso no redirigiendo al login obviamente, sino enviandolos a la pagina de error ***NotAuthorized***).
 
 ```c#
-[Authorize(Roles = "Admin")]
-public IActionResult Edit(int? id)
-
-[Authorize(Roles = "Admin")]
-public IActionResult Edit(int id, [Bind("Id, Descripcion, HsSemanales, HsTotales, PlanId")]Materia materia)
-
+[HttpGet]
 [Authorize]
-public IActionResult Create()
+public IActionResult Create() {}
 
+[HttpPost]
 [Authorize]
-public IActionResult Create(Materia materia)
+public IActionResult Create(Materia materia) {}
+
+[HttpGet]
+[Authorize(Roles = "Admin, Superadmin")]
+public IActionResult Edit(int? id) {}
+
+[HttpPost]
+[Authorize(Roles = "Admin, Superadmin")]
+public IActionResult Edit(int id, [Bind("Id, Descripcion, HsSemanales, HsTotales, PlanId")]Materia materia) {}
+
+[HttpGet]
+[Authorize(Roles = "Superadmin")]
+public IActionResult Delete(int? id) {}
+
+[HttpPost, ActionName("Delete")]
+[Authorize(Roles = "Superadmin")]
+public IActionResult DeleteConfirmed(int id) {}
 ```
+
+> Para ambos GET y POST de la accion ```Delete``` se utiliza la anotacion ```[Authorize(Roles = "Superadmin")]```, denotando que esta accion conlleva mayores privilegios que ```Edit``` la cual puede ser accedida tanto por usuarios con el rol admin como con el rol superadmin
 
 16. En cuanto a la pagina de error ***NotAuthorized*** esta esta asociada a la accion ```NotAuthorized``` del controlador ```Error```. Se solicita programar una vista que se vea de la siguiente manera:
 
 > Como novedad aqui se utilizara un icono de la libreria bootstrap icons (```<i class="bi bi-shield-fill-exclamation display-1 d-block"></i>```), para lo cual se debe incluir su cdn en el ```<head></head>``` de la vista ```Shared/_Layout``` (```<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">```)
 
+![imagen](https://user-images.githubusercontent.com/41701343/133905728-612bf984-15d5-40a3-834f-5d127abfaae1.png)   
+    
 <details close>
 <summary>Ver Vista completa</summary>
 
@@ -654,6 +775,8 @@ public IActionResult Create(Materia materia)
 
 17. En la vista maestra ```Shared/_Layout``` renderizar segun si el usuario ***no*** este logeado los nav items correspondientes a Login y Register. Esto es posible realizarlo gracias al uso de la directiva razor ```@if (User.Identity?.IsAuthenticated == false) { ... }```. Mostrar ambos items a la derecha del nav-bar.
 
+![imagen](https://user-images.githubusercontent.com/41701343/133905619-6f6fd86c-952e-4545-8abd-a855a987fef6.png)    
+    
 <details close>
 <summary>Ver Vista Parcial</summary>
 
@@ -674,6 +797,8 @@ public IActionResult Create(Materia materia)
 
 18. Tambien en la vista maestra ```Shared/_Layout``` renderizar segun si el usuario ***si*** este logeado un ```dropdown-menu``` (de bootstrap) con el email como ```dropdown-toggle``` y el nombre junto con la opcion de Logout como ```dropdown-items```. Utilizar la directiva razor ```@User.Claims.FirstOrDefault(c => c.Type == System.Security.Claims.ClaimTypes.TipoApropiado)?.Value```, que permite obtener y filtrar el listado de claims (en este caso ```ClaimTypes.Email``` y ```ClaimTypes.Name```) de la cookie que pertenece a la request actual.
 
+![imagen](https://user-images.githubusercontent.com/41701343/133905596-b325e35a-25ad-403e-a875-068b7e5b2f9f.png)    
+    
 <details close>
 <summary>Ver Vista Parcial</summary>
 
